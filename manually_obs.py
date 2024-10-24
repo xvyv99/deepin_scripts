@@ -18,7 +18,7 @@ import rich, requests # type: ignore
 from bs4 import BeautifulSoup # type: ignore
 
 def isUnresolvable(package_name: str) -> bool:
-    subprocess.run(["/bin/bash", "verify_repo.sh", str])
+    subprocess.run(["/bin/bash", "verify_repo.sh", package_name])
 
 if ONLINE:
     r = requests.get(PACKAGE_INFO_URL)
@@ -43,4 +43,4 @@ YANKED = ['nothing provides vim-common = 2:9.1.0016-1 needed by vim, (got versio
 for name in package_names:
     package: dict = package_status[name]
     if package['details'] not in YANKED:
-        print(package['package'], package['details'])
+        isUnresolvable(package['package'])
