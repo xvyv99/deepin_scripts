@@ -5,11 +5,11 @@ CleanUp() {
 }
 
 Failed() {
-    echo -e "\033[1;32mfailed!\033[0m"
+    echo "\033[1;32mfailed!\033[0m"
 }
 
 Done() {
-    echo -e "\033[1;32mdone.1\033[0m"
+    echo "\033[1;32mdone.\033[0m"
 }
 
 Red() {
@@ -17,15 +17,15 @@ Red() {
 }
 
 Green() {
-    echo -ne "\033[32m$1\033[0m"
+    echo -n "\033[32m$1\033[0m"
 }
 
 Yellow() {
-    echo -e "\033[33m$1\033[0m"
+    echo "\033[33m$1\033[0m"
 }
 
 BoldBlue() {
-    echo -e "\033[1;34m$1\033[0m"
+    echo "\033[1;34m$1\033[0m"
 }
 
 PACKAGE_REPO_URL="https://gh.hitcs.cc/github.com/deepin-community"
@@ -33,8 +33,8 @@ package_name=$1
 
 BoldBlue "Testing package ${package_name}."
 
-echo "---" >> verify.log
-echo "${package_name}" >> verify.log
+echo "---" >> /home/deepin/verify.log
+echo "${package_name}" >> /home/deepin/verify.log
 
 Green "Creating repo folder..."
 cd /tmp/
@@ -65,18 +65,22 @@ fi
 
 Green "Checking dep..."
 cd "${package_name}"
-res=$(sudo apt-get build-dep . --dry-run|grep -A 10000 "unmet dependencies")
+#res=$(sudo apt-get build-dep . --dry-run) #|grep -A 10000 "unmet dependencies")
+sudo apt-get build-dep . --dry-run #|grep -A 10000 "unmet dependencies")
 
-if [ $? -ne 100 ]; then
+status=$?
+if [ $status -eq 100 ]; then
     Done
-    Yellow "$res"
-    echo "$res" >> /home/deepin/verify.log
-elif [ $? -ne 0 ]; then
+    #Yellow "$res"
+    #echo "$res" >> /home/deepin/verify.log
+    echo "Unresolvable!!!" >> /home/deepin/verify.log
+elif [ $status -eq 0 ]; then
     Done
-    Green "No Problem"; echo ""
+    Green "No Problem."; echo ""
+    echo "No Problem." >> /home/deepin/verify.log
 else
     Red "Unknown Error!"
-    echo "Failed to cloning ${package_name}!" >> /home/deepin/verify.log
+    echo "Error code: $status!" 
+    echo "Error code: $status!" >> /home/deepin/verify.log
 fi
 
-CleanUp
